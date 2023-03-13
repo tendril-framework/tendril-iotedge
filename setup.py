@@ -28,7 +28,12 @@ def read(fname):
     return content
 
 
-core_dependencies = []
+core_dependencies = [
+    'tendril-caching>=0.2.2',
+    'tendril-auth>=0.3.3',
+    'tendril-apiserver-core',
+    'tendril-interests>=0.2.3',
+]
 
 install_requires = core_dependencies + ['wheel']
 
@@ -47,7 +52,7 @@ setup(
     use_scm_version={"root": ".", "relative_to": __file__},
     author="Chintalagiri Shashank",
     author_email="shashank@chintal.in",
-    description="IoT Edge Server Infrastructure",
+    description="Tendril IoT Edge Server Infrastructure",
     long_description='\n'.join([read('README.rst'), read('CHANGELOG.rst')]),
     long_description_content_type='text/x-rst',
     keywords='tendril',

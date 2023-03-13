@@ -40,7 +40,7 @@ config_elements_iotedge = [
         "True",
         "Whether the /announce endpoint is open (unauthenticated). This is required for the "
         "integrated device registration flow."
-    )
+    ),
 ]
 
 

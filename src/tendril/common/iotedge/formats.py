@@ -1,13 +1,29 @@
 
 
 from typing import Pattern
+from typing import Optional
 from tendril.utils.pydantic import TendrilTBaseModel
+from tendril.common.interests.states import InterestLifecycleStatus
 
 
-class IoTDeviceIDTModel(TendrilTBaseModel):
-    __root__ = Pattern['^[0-9A-F]{12}$']
+IoTDeviceIDTModel = str
+IoTDeviceAppnameTModel = str
 
 
-class IoTDeviceAnnounceTModel(TendrilTBaseModel):
+class IoTDeviceMessageTModel(TendrilTBaseModel):
     id: IoTDeviceIDTModel
-    appname: str
+
+
+class IoTDeviceAnnounceTModel(IoTDeviceMessageTModel):
+    appname: IoTDeviceAppnameTModel
+    have_credentials: bool
+
+
+class IoTDevicePingTModel(IoTDeviceMessageTModel):
+    status: Optional[dict]
+
+
+class IoTDeviceAnnounceResponseTModel(IoTDeviceMessageTModel):
+    status: InterestLifecycleStatus
+    interest_id: int
+    password: Optional[str]
