@@ -4,7 +4,7 @@ from tendril.common.exceptions import HTTPCodedException
 
 
 class DeviceTypeUnrecognized(HTTPCodedException):
-    status_code = 0
+    status_code = 406
 
     def __init__(self, appname, id=None):
         self.appname = appname
@@ -17,7 +17,7 @@ class DeviceTypeUnrecognized(HTTPCodedException):
 
 
 class DeviceTypeMismatch(HTTPCodedException):
-    status_code = 0
+    status_code = 409
 
     def __init__(self, actual, expected, id=None):
         self.actual = actual
@@ -27,5 +27,6 @@ class DeviceTypeMismatch(HTTPCodedException):
     def __str__(self):
         if not self.id:
             return f"Device type mismatch. Got '{self.actual}', expecting '{self.expected}'"
-        return f"Device type provided by '{self.id}' ('{self.actual}') " \
-               f"does not match the registered type '{self.expected}'"
+        return f"Device type of '{self.id}' ('{self.actual}') " \
+               f"does not match the required or registered type " \
+               f"'{self.expected}'"
