@@ -27,6 +27,7 @@ import importlib
 import networkx
 
 from tendril.utils.versions import get_namespace_package_names
+from tendril.common.iotedge.exceptions import DeviceTypeUnrecognized
 
 from tendril.utils import log
 logger = log.get_logger(__name__, log.DEBUG)
@@ -66,7 +67,7 @@ class IoTDeviceProfilesManager(object):
         try:
             return self._device_profiles[type_name]
         except KeyError:
-            raise DeviceTypeUnrecognized(appname, device_id)
+            raise DeviceTypeUnrecognized(type_name, device_id)
 
     def finalize(self):
         pass
