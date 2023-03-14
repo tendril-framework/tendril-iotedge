@@ -16,10 +16,15 @@ logger = log.get_logger(__name__, log.DEFAULT)
 
 @with_db
 def get_registration(device_id, appname=None, session=None):
-    profile = profiles.profile(appname, device_id=device_id)
-
-    interest = get_interest(name=device_id, type=profile.interest_type,
-                            raise_if_none=False, session=session)
+    if appname:
+        profile = profiles.profile(appname, device_id=device_id)
+        interest = get_interest(name=device_id, type=profile.interest_type,
+                                raise_if_none=False, session=session)
+    else:
+        interest = get_interest(name=device_id, raise_if_none=False,
+                                session=session)
+        appname = interest.appname
+        profile = profiles.profile(appname, device_id=device_id)
 
     if not interest:
         return None
@@ -43,7 +48,11 @@ def registered_device(appname=None):
     def decorator(func):
         @wraps(func)
         def get_registered_device(device_id=None, session=None, **kwargs):
-            device = get_registration(device_id, appname=appname, session=session)
+            if appname:
+                device = get_registration(device_id, appname=appname, session=session)
+            else:
+                device = get_registration(device_id, session=session)
+                kwargs['appname'] = device.appname
             func(device=device, session=session, **kwargs)
         return get_registered_device
     return decorator
