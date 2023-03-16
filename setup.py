@@ -31,7 +31,6 @@ def read(fname):
 core_dependencies = [
     'tendril-caching>=0.2.2',
     'tendril-auth>=0.3.3',
-    'tendril-apiserver-core',
     'tendril-interests>=0.2.3',
 ]
 

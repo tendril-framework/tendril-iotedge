@@ -28,10 +28,10 @@ depends = ['tendril.config.core']
 
 config_elements_iotedge = [
     ConfigOption(
-        'IOTEDGE_ENABLED',
+        'IOTEDGE_API_ENABLED',
         "False",
-        "Whether the IOT Edge infrastructure is enabled on this instance / component. Generally, "
-        "multi-component Tendril deployments will have the IOT Edge Infrastructure enabled only on "
+        "Whether the IOT Edge API is enabled on this instance / component. Generally, "
+        "multi-component Tendril deployments will have the IOT Edge API enabled only on "
         "a single component. For such deployments, this parameter is generally best set through "
         "environment variables."
     ),
