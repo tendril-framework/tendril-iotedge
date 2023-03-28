@@ -33,13 +33,15 @@ config_elements_iotedge = [
         "Whether the IOT Edge API is enabled on this instance / component. Generally, "
         "multi-component Tendril deployments will have the IOT Edge API enabled only on "
         "a single component. For such deployments, this parameter is generally best set through "
-        "environment variables."
+        "environment variables.",
+        parser=bool
     ),
     ConfigOption(
         'IOTEDGE_ANNOUNCE_ENDPOINT_OPEN',
         "True",
         "Whether the /announce endpoint is open (unauthenticated). This is required for the "
-        "integrated device registration flow."
+        "integrated device registration flow.",
+        parser=bool
     ),
 ]
 
