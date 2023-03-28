@@ -15,7 +15,7 @@ from tendril.authn.users import AuthUserModel
 from tendril.iotedge.announce import announce_device
 from tendril.iotedge.heartbeat import ping
 
-from tendril.config import IOTEDGE_ENABLED
+from tendril.config import IOTEDGE_API_ENABLED
 from tendril.config import IOTEDGE_ANNOUNCE_ENDPOINT_OPEN
 
 from tendril.utils import log
@@ -52,7 +52,7 @@ async def iot_device_ping(message: IoTDevicePingTModel):
     return 'pong'
 
 
-if IOTEDGE_ENABLED:
+if IOTEDGE_API_ENABLED:
     routers = [
         iotedge_announce_router,
         iotedge_router
