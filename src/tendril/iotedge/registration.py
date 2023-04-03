@@ -53,6 +53,6 @@ def registered_device(appname=None):
             else:
                 device = get_registration(device_id, session=session)
                 kwargs['appname'] = device.appname
-            func(device=device, session=session, **kwargs)
+            return func(device=device, session=session, **kwargs)
         return get_registered_device
     return decorator

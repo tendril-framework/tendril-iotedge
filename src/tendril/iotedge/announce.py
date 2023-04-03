@@ -18,8 +18,8 @@ def announce_device(device_id, appname, have_credentials, session=None):
     device = get_registration(device_id, appname, session=session)
     if device:
         logger.debug(f"Got announce from a registered device {device_id} "
-                     f"in state {device.interest.status}.")
-        if device.interest.status == InterestLifecycleStatus.ACTIVE:
+                     f"in state {device.model_instance.status}.")
+        if device.model_instance.status == InterestLifecycleStatus.ACTIVE:
             if not have_credentials:
                 # If there is a password waiting for one-time transmission,
                 # transmit it.
@@ -35,7 +35,7 @@ def announce_device(device_id, appname, have_credentials, session=None):
                     logger.info(f"Found password for {device_id} on transit cache.")
                     transit.delete(namespace="ott:dp", key=device_id)
                     rv['password'] = password
-        if device.interest.status == InterestLifecycleStatus.NEW:
+        if device.model_instance.status == InterestLifecycleStatus.NEW:
             # We're waiting for activation and don't need to do anything here.
             pass
     else:
@@ -48,8 +48,8 @@ def announce_device(device_id, appname, have_credentials, session=None):
         # When the device is activated, the interest activation will create a password
         # and store it on transit for one time transmission within this endpoint itself.
     rv.update({
-        'interest_id': device.interest.id,
-        'id': device.interest.name,
-        'status': device.interest.status
+        'interest_id': device.model_instance.id,
+        'id': device.model_instance.name,
+        'status': device.model_instance.status
     })
     return rv

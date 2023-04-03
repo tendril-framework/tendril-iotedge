@@ -11,9 +11,9 @@ logger = log.get_logger(__name__, log.DEFAULT)
 
 def mark_seen(func):
     @wraps(func)
-    def inner(device=None, appname=None, session=None, **kwargs):
+    def inner(device=None, session=None, **kwargs):
         logger.debug(f"Mark device {device} as seen")
-        func(device=device, session=session, **kwargs)
+        return func(device=device, session=session, **kwargs)
     return inner
 
 
