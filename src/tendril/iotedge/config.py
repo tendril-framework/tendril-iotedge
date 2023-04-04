@@ -13,4 +13,5 @@ logger = log.get_logger(__name__, log.DEFAULT)
 @registered_device()
 @mark_seen
 def get_config(device=None, appname=None, session=None):
-    return device.config(session=session)
+    config = device.config(session=session)
+    return config.export()

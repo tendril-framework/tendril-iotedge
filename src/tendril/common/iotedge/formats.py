@@ -1,6 +1,6 @@
 
 
-from typing import Pattern
+from typing import Literal
 from typing import Optional
 from tendril.utils.pydantic import TendrilTBaseModel
 from tendril.common.interests.states import InterestLifecycleStatus
@@ -27,3 +27,11 @@ class IoTDeviceAnnounceResponseTModel(IoTDeviceMessageTModel):
     status: InterestLifecycleStatus
     interest_id: int
     password: Optional[str]
+
+
+class IoTDeviceSettingRequestTModel(IoTDeviceMessageTModel):
+    appname: IoTDeviceAppnameTModel
+
+
+class IoTDeviceSettingsTModel(TendrilTBaseModel):
+    appname: Literal['device']

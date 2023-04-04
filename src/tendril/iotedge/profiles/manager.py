@@ -24,9 +24,12 @@ Tendril IoT Device Profiles Manager (:mod:`tendril.iotedge.profiles.manager`)
 
 
 import importlib
-import networkx
+from typing import Union
+from pydantic import Field
+from typing_extensions import Annotated
 
 from tendril.utils.versions import get_namespace_package_names
+from tendril.common.iotedge.formats import IoTDeviceSettingsTModel
 from tendril.common.iotedge.exceptions import DeviceTypeUnrecognized
 
 from tendril.utils import log
@@ -38,6 +41,7 @@ class IoTDeviceProfilesManager(object):
         self._prefix = prefix
         self._device_profiles = {}
         self._docs = []
+        self.device_config_unified_model = None
         self._load_profiles()
 
     def _load_profiles(self):
@@ -63,6 +67,10 @@ class IoTDeviceProfilesManager(object):
     def device_type_names(self):
         return self._device_profiles.keys()
 
+    @property
+    def device_config_tmodels(self):
+        return {x.appname: x.config_model.tmodel for x in self._device_profiles.values()}
+
     def profile(self, type_name, device_id=None):
         try:
             return self._device_profiles[type_name]
@@ -70,7 +78,9 @@ class IoTDeviceProfilesManager(object):
             raise DeviceTypeUnrecognized(type_name, device_id)
 
     def finalize(self):
-        pass
+        types = tuple([IoTDeviceSettingsTModel] + list(self.device_config_tmodels.values()))
+        self.device_config_unified_model = Annotated[Union[types],
+                                                     Field(discriminator='appname')]
 
     def __getattr__(self, item):
         if item == '__file__':
