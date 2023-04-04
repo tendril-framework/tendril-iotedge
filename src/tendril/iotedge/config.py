@@ -14,4 +14,5 @@ logger = log.get_logger(__name__, log.DEFAULT)
 @mark_seen
 def get_config(device=None, appname=None, session=None):
     config = device.config(session=session)
+    logger.info(f"Sending device settings to {device}")
     return config.export()
