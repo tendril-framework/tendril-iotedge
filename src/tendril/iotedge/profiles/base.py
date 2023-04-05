@@ -29,6 +29,13 @@ class DeviceProfile(object):
             session.flush()
         return cfg
 
+    @with_db
+    def configure(self, settings, session=None):
+        # At this stage, apply the provided options without
+        # further access control. Only perform (redundant) sanity
+        # checks on some options, if that.
+        pass
+
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.model_instance.appname} {self.model_instance.name}>"
 

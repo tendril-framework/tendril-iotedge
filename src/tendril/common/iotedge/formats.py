@@ -31,7 +31,3 @@ class IoTDeviceAnnounceResponseTModel(IoTDeviceMessageTModel):
 
 class IoTDeviceSettingRequestTModel(IoTDeviceMessageTModel):
     appname: IoTDeviceAppnameTModel
-
-
-class IoTDeviceSettingsTModel(TendrilTBaseModel):
-    appname: Literal['device']

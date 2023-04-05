@@ -30,8 +30,10 @@ else:
         'dependencies': [Depends(authn_dependency)]
     }
 
+
 iotedge_announce_router = APIRouter(prefix='/iot', **kwargs,
                                     tags=['IOT Device Edge Announce API'])
+
 
 iotedge_router = APIRouter(prefix='/iot',
                            tags=["IOT Device Edge Core API"],
@@ -59,11 +61,13 @@ async def iot_device_settings(req: IoTDeviceSettingRequestTModel):
     return result
 
 
+routers = []
+
+
 if IOTEDGE_API_ENABLED:
-    routers = [
+    routers.extend([
         iotedge_announce_router,
         iotedge_router
-    ]
+    ])
 else:
     logger.info("Not creating IoTEdge API routers.")
-    routers = []

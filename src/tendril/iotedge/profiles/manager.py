@@ -29,7 +29,6 @@ from pydantic import Field
 from typing_extensions import Annotated
 
 from tendril.utils.versions import get_namespace_package_names
-from tendril.common.iotedge.formats import IoTDeviceSettingsTModel
 from tendril.common.iotedge.exceptions import DeviceTypeUnrecognized
 
 from tendril.utils import log
@@ -64,22 +63,22 @@ class IoTDeviceProfilesManager(object):
         return self._device_profiles
 
     @property
-    def device_type_names(self):
+    def device_appnames(self):
         return self._device_profiles.keys()
 
     @property
     def device_config_tmodels(self):
-        return {x.appname: x.config_model.tmodel for x in self._device_profiles.values()}
+        return {x.appname: x.config_model.tmodel() for x in self._device_profiles.values()}
 
-    def profile(self, type_name, device_id=None):
+    def profile(self, appname, device_id=None):
         try:
-            return self._device_profiles[type_name]
+            return self._device_profiles[appname]
         except KeyError:
-            raise DeviceTypeUnrecognized(type_name, device_id)
+            raise DeviceTypeUnrecognized(appname, device_id)
 
     def finalize(self):
-        types = tuple([IoTDeviceSettingsTModel] + list(self.device_config_tmodels.values()))
-        self.device_config_unified_model = Annotated[Union[types],
+        logger.info("Building device configuration message models")
+        self.device_config_unified_model = Annotated[Union[tuple(self.device_config_tmodels.values())],
                                                      Field(discriminator='appname')]
 
     def __getattr__(self, item):
