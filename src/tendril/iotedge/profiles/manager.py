@@ -20,6 +20,9 @@
 """
 Tendril IoT Device Profiles Manager (:mod:`tendril.iotedge.profiles.manager`)
 =============================================================================
+
+<< Consider moving Device Profiles to iotcore or iotcommon. Presently,
+   iotedge is the foundational package for the tendril-iot stack. >>
 """
 
 
