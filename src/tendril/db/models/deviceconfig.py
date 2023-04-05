@@ -67,7 +67,7 @@ class DeviceConfigurationModel(DeclBase, BaseMixin, TimestampMixin):
                 if key=='appname':
                     components[key] = (Literal[cls.device_type], cls.device_type)
                 else:
-                    components[key] = (Optional[lspec.type], lspec.default)
+                    components[key] = (Optional[lspec.type], None)
             elif isinstance(lspec, dict):
                 subname = key
                 subname = subname.replace('_', ' ')
