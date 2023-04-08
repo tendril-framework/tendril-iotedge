@@ -32,6 +32,7 @@ from pydantic import Field
 from typing_extensions import Annotated
 
 from tendril.utils.versions import get_namespace_package_names
+from tendril.iotedge.profiles.base import DeviceConfigurationModel
 from tendril.common.iotedge.exceptions import DeviceTypeUnrecognized
 
 from tendril.utils import log
@@ -81,8 +82,15 @@ class IoTDeviceProfilesManager(object):
 
     def finalize(self):
         logger.info("Building device configuration message models")
-        self.device_config_unified_model = Annotated[Union[tuple(self.device_config_tmodels.values())],
-                                                     Field(discriminator='appname')]
+        if len(self.device_profiles) > 1:
+            self.device_config_unified_model = \
+                Annotated[Union[tuple(self.device_config_tmodels.values())],
+                          Field(discriminator='appname')]
+        elif len(self.device_profiles) == 1:
+            self.device_config_unified_model = \
+                list(self._device_profiles.values())[0].config_model.tmodel()
+        else:
+            self.device_config_unified_model = DeviceConfigurationModel.tmodel()
 
     def __getattr__(self, item):
         if item == '__file__':

@@ -1,7 +1,6 @@
 
 
 from tendril.libraries import interests
-from tendril.iotedge import profiles
 from tendril.common.interests.exceptions import InterestTypeUnsupported
 
 from tendril.utils.db import with_db
