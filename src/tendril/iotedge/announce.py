@@ -1,7 +1,7 @@
 
 
 from tendril.caching import transit
-from tendril.common.interests.states import InterestLifecycleStatus
+from tendril.common.states import LifecycleStatus
 
 from .registration import get_registration
 from .registration import register
@@ -19,7 +19,7 @@ def announce_device(device_id, appname, have_credentials, session=None):
     if device:
         logger.debug(f"Got announce from a registered device {device_id} "
                      f"in state {device.model_instance.status}.")
-        if device.model_instance.status == InterestLifecycleStatus.ACTIVE:
+        if device.model_instance.status == LifecycleStatus.ACTIVE:
             if not have_credentials:
                 # If there is a password waiting for one-time transmission,
                 # transmit it.
@@ -35,7 +35,7 @@ def announce_device(device_id, appname, have_credentials, session=None):
                     logger.info(f"Found password for {device_id} on transit cache.")
                     transit.delete(namespace="ott:dp", key=device_id)
                     rv['password'] = password
-        if device.model_instance.status == InterestLifecycleStatus.NEW:
+        if device.model_instance.status == LifecycleStatus.NEW:
             # We're waiting for activation and don't need to do anything here.
             pass
     else:
