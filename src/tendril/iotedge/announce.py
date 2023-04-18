@@ -35,7 +35,7 @@ def announce_device(device_id, appname, have_credentials, session=None):
                     logger.info(f"Found password for {device_id} on transit cache.")
                     transit.delete(namespace="ott:dp", key=device_id)
                     rv['password'] = password
-        if device.model_instance.status == LifecycleStatus.NEW:
+        if device.model_instance.status in [LifecycleStatus.NEW, LifecycleStatus.APPROVAL]:
             # We're waiting for activation and don't need to do anything here.
             pass
     else:
