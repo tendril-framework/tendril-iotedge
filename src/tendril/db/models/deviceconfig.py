@@ -1,5 +1,6 @@
 
 
+from typing import Union
 from typing import Literal
 from typing import Optional
 from pydantic import create_model
@@ -34,9 +35,11 @@ from tendril.utils.db import TimestampMixin
 #  distributable package of their own. Tentatively, tendril-iotcore, holding most
 #  of the separable device related bulk from sxm-core.
 
-cfg_option_spec = namedtuple('CfgOptionSpec', ['description', 'accessor', 'exporter', 'validator',
-                                               'type', 'default', 'read_only'],
-                             defaults=[None, None, str, None, False])
+cfg_option_spec = namedtuple('CfgOptionSpec', ['description', 'accessor',
+                                               'exporter', 'export_tmodel',
+                                               'validator', 'type', 'default', 'read_only'],
+                             defaults=[None, None,
+                                       None, str, None, False])
 
 
 class DeviceConfigurationModel(DeclBase, BaseMixin, TimestampMixin):
@@ -68,7 +71,10 @@ class DeviceConfigurationModel(DeclBase, BaseMixin, TimestampMixin):
                 if key=='appname':
                     components[key] = (Literal[cls.device_type], cls.device_type)
                 else:
-                    components[key] = (Optional[lspec.type], None)
+                    if lspec.exporter and lspec.export_tmodel:
+                        components[key] = (Optional[Union[lspec.type, lspec.export_tmodel]], None)
+                    else:
+                        components[key] = (Optional[lspec.type], None)
             elif isinstance(lspec, dict):
                 subname = key
                 subname = subname.replace('_', ' ')
