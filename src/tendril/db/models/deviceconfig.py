@@ -34,8 +34,9 @@ from tendril.utils.db import TimestampMixin
 #  distributable package of their own. Tentatively, tendril-iotcore, holding most
 #  of the separable device related bulk from sxm-core.
 
-cfg_option_spec = namedtuple('CfgOptionSpec', ['description', 'accessor', 'type', 'default', 'read_only'],
-                             defaults=[str, None, False])
+cfg_option_spec = namedtuple('CfgOptionSpec', ['description', 'accessor', 'exporter', 'validator',
+                                               'type', 'default', 'read_only'],
+                             defaults=[None, None, str, None, False])
 
 
 class DeviceConfigurationModel(DeclBase, BaseMixin, TimestampMixin):
@@ -87,16 +88,19 @@ class DeviceConfigurationModel(DeclBase, BaseMixin, TimestampMixin):
         name = cls.__name__.replace("Model", "TModel")
         return cls._build_tmodel(name, cls.configuration_spec())
 
-    def _extract_config(self, spec):
+    def _extract_config(self, spec, expand=True):
         rv = {}
         for key, lspec in spec.items():
             if isinstance(lspec, dict):
-                rv[key] = self._extract_config(lspec)
+                rv[key] = self._extract_config(lspec, expand=expand)
             elif isinstance(lspec, cfg_option_spec):
-                rv[key] = getattr(self, lspec.accessor)
+                if expand and lspec.exporter:
+                    rv[key] = getattr(self, lspec.exporter)(getattr(self, lspec.accessor))
+                else:
+                    rv[key] = getattr(self, lspec.accessor)
             else:
                 raise TypeError(f"Got an unsupported type for device option spec {lspec}")
         return rv
 
-    def export(self):
-        return self._extract_config(self.configuration_spec())
+    def export(self, expand=True):
+        return self._extract_config(self.configuration_spec(), expand=expand)

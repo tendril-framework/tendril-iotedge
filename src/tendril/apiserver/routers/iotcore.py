@@ -29,7 +29,7 @@ async def read_device_settings(id: int,
                                user: AuthUserModel = auth_spec(scopes=['device:read'])):
     with get_session() as session:
         return get_device_settings(id=id, auth_user=user,
-                                   session=session).export()
+                                   session=session).export(expand=False)
 
 
 @device_management_router.post("/{id}/settings",
@@ -40,7 +40,7 @@ async def write_device_settings(id: int, settings: device_config_unified_model,
         result = set_device_settings(id=id, settings=settings,
                                      auth_user=user, session=session)
         return get_device_settings(id=id, auth_user=user,
-                                   session=session).export()
+                                   session=session).export(expand=False)
 
 if INTERESTS_API_ENABLED:
     routers = [
