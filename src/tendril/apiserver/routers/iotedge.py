@@ -55,7 +55,7 @@ async def iot_device_ping(message: IoTDevicePingTModel):
     return 'pong'
 
 
-@iotedge_router.get("/settings", response_model=device_config_unified_model)
+@iotedge_router.post("/settings", response_model=device_config_unified_model)
 async def iot_device_settings(req: IoTDeviceSettingRequestTModel):
     result = get_config(device_id=req.id, appname=req.appname)
     return result
