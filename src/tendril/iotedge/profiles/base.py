@@ -1,7 +1,6 @@
 
 
 import arrow
-from sqlalchemy.orm.exc import NoResultFound
 
 from tendril.db.models.deviceconfig import DeviceConfigurationModel
 from tendril.utils.db import with_db
@@ -21,6 +20,7 @@ class DeviceProfile(object):
 
     def report_seen(self):
         self.interest().monitor_report('last_seen', arrow.utcnow())
+        self.interest().monitor_report('online', True)
 
     def report_status(self, status):
         self.interest().monitors_report(status)
