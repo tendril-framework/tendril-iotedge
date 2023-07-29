@@ -1,8 +1,8 @@
 
 
+import arrow
 from sqlalchemy.orm.exc import NoResultFound
 
-from tendril import interests
 from tendril.db.models.deviceconfig import DeviceConfigurationModel
 from tendril.utils.db import with_db
 
@@ -16,7 +16,14 @@ class DeviceProfile(object):
         self.model_instance = model_instance
 
     def interest(self):
+        from tendril import interests
         return interests.type_codes[self.interest_type](self.model_instance)
+
+    def report_seen(self):
+        self.interest().monitor_report('last_seen', arrow.utcnow())
+
+    def report_status(self, status):
+        self.interest().monitors_report(status)
 
     @with_db
     def config(self, session=None):

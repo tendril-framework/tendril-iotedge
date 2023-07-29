@@ -13,6 +13,7 @@ def mark_seen(func):
     @wraps(func)
     def inner(device=None, session=None, **kwargs):
         logger.debug(f"Mark device {device} as seen")
+        device.report_seen()
         return func(device=device, session=session, **kwargs)
     return inner
 
@@ -22,3 +23,4 @@ def mark_seen(func):
 @mark_seen
 def ping(device=None, appname=None, status=None, session=None):
     logger.info(f"Got ping from {device}")
+    device.report_status(status)
