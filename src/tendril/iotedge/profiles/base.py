@@ -18,12 +18,13 @@ class DeviceProfile(object):
         from tendril import interests
         return interests.type_codes[self.interest_type](self.model_instance)
 
-    def report_seen(self):
-        self.interest().monitor_report('last_seen', arrow.utcnow())
-        self.interest().monitor_report('online', True)
+    def report_seen(self, background_tasks=None):
+        self.interest().monitor_report('last_seen', arrow.utcnow(), background_tasks=background_tasks)
+        self.interest().monitor_report('online', True, background_tasks=background_tasks)
 
-    def report_status(self, status):
-        self.interest().monitors_report(status)
+    def report_status(self, status, background_tasks=None):
+        self.interest().monitors_report(status,
+                                        background_tasks=background_tasks)
 
     @with_db
     def config(self, session=None):

@@ -9,18 +9,10 @@ from tendril.utils import log
 logger = log.get_logger(__name__, log.DEFAULT)
 
 
-def mark_seen(func):
-    @wraps(func)
-    def inner(device=None, session=None, **kwargs):
-        logger.debug(f"Mark device {device} as seen")
-        device.report_seen()
-        return func(device=device, session=session, **kwargs)
-    return inner
-
-
 @with_db
 @registered_device()
-@mark_seen
-def ping(device=None, appname=None, status=None, session=None):
+def ping(device=None, appname=None, status=None,
+         background_tasks=None, session=None):
     logger.info(f"Got ping from {device}")
-    device.report_status(status)
+    device.report_seen(background_tasks=background_tasks)
+    device.report_status(status, background_tasks=background_tasks)

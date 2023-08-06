@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import BackgroundTasks
 
 from tendril.common.iotedge.formats import IoTDevicePingTModel
 from tendril.common.iotedge.formats import IoTDeviceAnnounceTModel
@@ -50,8 +51,10 @@ async def iot_device_announce(announce: IoTDeviceAnnounceTModel):
 
 
 @iotedge_router.post("/ping")
-async def iot_device_ping(message: IoTDevicePingTModel):
-    result = ping(device_id=message.id, status=message.status)
+async def iot_device_ping(message: IoTDevicePingTModel,
+                          background_tasks: BackgroundTasks):
+    result = ping(device_id=message.id, status=message.status,
+                  background_tasks=background_tasks)
     return 'pong'
 
 
