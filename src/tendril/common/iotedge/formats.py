@@ -1,6 +1,5 @@
 
 
-from typing import Literal
 from typing import Optional
 from tendril.utils.pydantic import TendrilTBaseModel
 from tendril.common.states import LifecycleStatus
@@ -17,6 +16,7 @@ class IoTDeviceMessageTModel(TendrilTBaseModel):
 class IoTDeviceAnnounceTModel(IoTDeviceMessageTModel):
     appname: IoTDeviceAppnameTModel
     have_credentials: bool
+    sysinfo: Optional[dict]
 
 
 class IoTDevicePingTModel(IoTDeviceMessageTModel):

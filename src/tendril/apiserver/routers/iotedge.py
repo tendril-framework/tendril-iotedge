@@ -44,10 +44,13 @@ iotedge_router = APIRouter(prefix='/iot',
 
 @iotedge_announce_router.post("/announce",
                               response_model=IoTDeviceAnnounceResponseTModel)
-async def iot_device_announce(announce: IoTDeviceAnnounceTModel):
+async def iot_device_announce(announce: IoTDeviceAnnounceTModel,
+                              background_tasks: BackgroundTasks):
     return announce_device(device_id=announce.id,
                            appname=announce.appname,
-                           have_credentials=announce.have_credentials)
+                           have_credentials=announce.have_credentials,
+                           device_sysinfo=announce.sysinfo,
+                           background_tasks=background_tasks)
 
 
 @iotedge_router.post("/ping")
