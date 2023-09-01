@@ -32,6 +32,8 @@ def announce_device(device_id, appname, have_credentials,
                     # manually reset password and load it up for one-time transmission.
                     # Raise manual password reset request here. Changing device status to
                     # NEW should get the job done as presently implemented.
+                    # TODO This needs to be implemented on priority. Switching SD
+                    #  cards on devices will bring us here.
                 else:
                     logger.info(f"Found password for {device_id} on transit cache.")
                     transit.delete(namespace="ott:dp", key=device_id)
