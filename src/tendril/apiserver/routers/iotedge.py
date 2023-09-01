@@ -42,12 +42,6 @@ iotedge_router = APIRouter(prefix='/iot',
                                          auth_spec()])
 
 
-iotedge_reports_router = APIRouter(prefix='/iot/report',
-                                   tags=["IOT Device Edge Reporting API"],)
-                                   # dependencies=[Depends(authn_dependency),
-                                   #               auth_spec()])
-
-
 @iotedge_announce_router.post("/announce",
                               response_model=IoTDeviceAnnounceResponseTModel)
 async def iot_device_announce(announce: IoTDeviceAnnounceTModel,
@@ -80,7 +74,6 @@ if IOTEDGE_API_ENABLED:
     routers.extend([
         iotedge_announce_router,
         iotedge_router,
-        iotedge_reports_router,
     ])
 else:
     logger.info("Not creating IoTEdge API routers.")
