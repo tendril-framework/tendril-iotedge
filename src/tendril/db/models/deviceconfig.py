@@ -1,5 +1,6 @@
 
 
+from typing import Any
 from typing import Union
 from typing import Literal
 from typing import Optional
@@ -24,7 +25,7 @@ from tendril.utils.db import TimestampMixin
 #  This might make the code separation a little more complicated than needed, so an
 #  alternate refactoring might be suitable. For instance, such a heavy implementaion
 #  of the DeviceConfigurationModel is not in line with the typical tendril
-#  architecture. The assumption that there will be a "Device" intterest class with the
+#  architecture. The assumption that there will be a "Device" interest class with the
 #  "DeviceModel" table is not good either.
 #  Specifically, tendril-iotedge as presently written is not independently viable,
 #  and in fact is not viable even when combined with more fundamental tendril packages.
@@ -37,9 +38,10 @@ from tendril.utils.db import TimestampMixin
 
 cfg_option_spec = namedtuple('CfgOptionSpec', ['description', 'accessor',
                                                'exporter', 'export_tmodel',
-                                               'validator', 'type', 'default', 'read_only'],
+                                               'validator', 'type', 'default', 'read_only',
+                                               'allow_none', 'gatekeeper', 'core_annex_accessor'],
                              defaults=[None, None,
-                                       None, str, None, False])
+                                       None, str, None, False, False, None, None])
 
 
 class DeviceConfigurationModel(DeclBase, BaseMixin, TimestampMixin):
@@ -47,6 +49,8 @@ class DeviceConfigurationModel(DeclBase, BaseMixin, TimestampMixin):
     appname = Column(String(50), nullable=False, default=device_type)
     hname = Column(String(100))
 
+    # TODO Check that this is actually 1-1. If it is, it should be called device, not devices.
+    #   The original intent for 'devices' is now provided for by policies and is not needed here.
     @declared_attr
     def devices(cls):
         return relationship("DeviceModel", back_populates='config', lazy='selectin')
@@ -75,6 +79,8 @@ class DeviceConfigurationModel(DeclBase, BaseMixin, TimestampMixin):
                         components[key] = (Optional[Union[lspec.type, lspec.export_tmodel]], None)
                     else:
                         components[key] = (Optional[lspec.type], None)
+                    if lspec.core_annex_accessor:
+                        components[lspec.core_annex_accessor] = (Optional[Any], None)
             elif isinstance(lspec, dict):
                 subname = key
                 subname = subname.replace('_', ' ')
@@ -104,6 +110,8 @@ class DeviceConfigurationModel(DeclBase, BaseMixin, TimestampMixin):
                     rv[key] = getattr(self, lspec.exporter)(getattr(self, lspec.accessor))
                 else:
                     rv[key] = getattr(self, lspec.accessor)
+                    if lspec.core_annex_accessor:
+                        rv[lspec.core_annex_accessor] = getattr(self, lspec.core_annex_accessor)
             else:
                 raise TypeError(f"Got an unsupported type for device option spec {lspec}")
         return rv
