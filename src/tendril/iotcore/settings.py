@@ -19,9 +19,11 @@ def get_device_settings(id: int, auth_user=None, session=None):
 
 
 @with_db
-def set_device_settings(id: int, settings=None, auth_user=None, session=None):
+def set_device_settings(id: int, settings=None, background_tasks=None, auth_user=None, session=None):
     library = interests.find_library(id)
     interest = library.item(id=id, session=session)
     if not hasattr(interest, 'appname'):
         raise InterestTypeUnsupported("'appname' attribute", id=id, name=interest.name)
-    return interest.configure(settings=settings, auth_user=auth_user, session=session)
+    response = interest.configure(settings=settings, auth_user=auth_user, session=session)
+    interest.trigger_device_settings_update(background_tasks=background_tasks)
+    return response

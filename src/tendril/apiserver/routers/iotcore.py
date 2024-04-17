@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import BackgroundTasks
 
 from tendril.authn.users import auth_spec
 from tendril.authn.users import authn_dependency
@@ -35,9 +36,11 @@ async def read_device_settings(id: int,
 @device_management_router.post("/{id}/settings",
                                response_model=device_config_unified_model)
 async def write_device_settings(id: int, settings: device_config_unified_model,
-                                user: AuthUserModel = auth_spec(scopes=['device:write'])):
+                                user: AuthUserModel = auth_spec(scopes=['device:write']),
+                                background_tasks=BackgroundTasks):
     with get_session() as session:
         result = set_device_settings(id=id, settings=settings,
+                                     background_tasks=background_tasks,
                                      auth_user=user, session=session)
         return get_device_settings(id=id, auth_user=user,
                                    session=session).export(expand=False)
