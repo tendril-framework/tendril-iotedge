@@ -1,12 +1,9 @@
 
 
-from functools import wraps
-
 from .registration import registered_device
-
 from tendril.utils.db import with_db
 from tendril.utils import log
-logger = log.get_logger(__name__, log.DEFAULT)
+logger = log.get_logger(__name__)
 
 
 @with_db
