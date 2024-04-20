@@ -34,7 +34,7 @@ async def publish_logs(logs_archive, device=None, appname=None,
     )
 
     background_tasks.add_task(
-        device.recieve_logs, file=logs_archive,
+        device.receive_logs, file=logs_archive,
         rename_to=storage_filename, token_id=upload_token.id,
         session=session
     )
