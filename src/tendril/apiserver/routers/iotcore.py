@@ -52,22 +52,19 @@ async def write_device_settings(id: int, settings: device_config_unified_model,
 
 
 @device_management_router.post("/{id}/logs")
-async def request_logs_from_device(id: int,
-                       user: AuthUserModel = auth_spec(scopes=['device:write']),
-                       background_tasks=BackgroundTasks):
+async def request_logs_from_device(id: int, background_tasks: BackgroundTasks,
+                                   user: AuthUserModel = auth_spec(scopes=['device:write'])):
     with get_session() as session:
         return request_device_logs(id=id, background_tasks=background_tasks,
                                    auth_user=user, session=session)
 
 
 @device_management_router.get("/{id}/logs")
-async def get_available_logs(id: int,
-                             user: AuthUserModel = auth_spec(scopes=['device:write']),
-                             background_tasks=BackgroundTasks):
+async def get_available_logs(id: int, background_tasks: BackgroundTasks,
+                             user: AuthUserModel = auth_spec(scopes=['device:write'])):
     with get_session() as session:
         return available_device_logs(id=id, background_tasks=background_tasks,
                                      auth_user=user, session=session)
-
 
 
 if INTERESTS_API_ENABLED:
