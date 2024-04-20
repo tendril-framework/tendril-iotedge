@@ -43,6 +43,11 @@ config_elements_iotedge = [
         "integrated device registration flow.",
         parser=bool
     ),
+    ConfigOption(
+        'IOTEDGE_DEVICE_LOGS_UPLOAD_FILESTORE_BUCKET',
+        '"incoming"',
+        "Filestore bucket to upload device logs to."
+    )
 ]
 
 

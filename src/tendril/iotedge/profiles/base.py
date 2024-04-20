@@ -1,7 +1,13 @@
 
 
+import os
 import arrow
+from httpx import HTTPStatusError
+from tendril.filestore import buckets
+from tendril.config import IOTEDGE_DEVICE_LOGS_UPLOAD_FILESTORE_BUCKET
 
+from tendril.caching import tokens
+from tendril.caching.tokens import TokenStatus
 from tendril.db.models.deviceconfig import DeviceConfigurationModel
 from tendril.utils.db import with_db
 from tendril.utils import log
@@ -12,9 +18,18 @@ class DeviceProfile(object):
     appname = None
     interest_type = 'device'
     config_model = DeviceConfigurationModel
+    logs_upload_bucket_name = IOTEDGE_DEVICE_LOGS_UPLOAD_FILESTORE_BUCKET
 
     def __init__(self, model_instance):
         self._model_instance = model_instance
+
+    @property
+    def upload_bucket(self):
+        if not hasattr(self, '_upload_bucket'):
+            self._logs_upload_bucket = None
+        if not self._logs_upload_bucket:
+            self._logs_upload_bucket = buckets.get_bucket(self.logs_upload_bucket_name)
+        return self._logs_upload_bucket
 
     @property
     def model_instance(self):
@@ -35,6 +50,47 @@ class DeviceProfile(object):
     def report_status(self, status, background_tasks=None):
         self.interest().monitors_report(status,
                                         background_tasks=background_tasks)
+
+    def _report_filestore_error(self, token_id, e, action_comment):
+        logger.warn(f"Exception while {action_comment} : HTTP {e.response.status_code} {e.response.text}")
+        if token_id:
+            tokens.update(
+                'dlu', token_id, state=TokenStatus.FAILED,
+                error={"summary": f"Exception while {action_comment}",
+                       "filestore": {
+                           "code": e.response.status_code,
+                           "content": e.response.json()}
+                       }
+            )
+
+    @with_db
+    async def receive_logs(self, file, rename_to=None, token_id=None, session=None):
+        # TODO Consider integrating this into a standardized upload handler
+        #  in the interest itself
+        storage_folder = f'{self.model_instance.id}'
+        if token_id:
+            tokens.update('dlu', token_id,
+                          state=TokenStatus.INPROGRESS, max=2,
+                          current="Uploading File to Filestore")
+
+        filename = rename_to or file.filename
+
+        # 2. Upload File to Bucket
+        try:
+            upload_response = await self.upload_bucket.upload(
+                file=(os.path.join(storage_folder, filename), file.file),
+                interest=self.model_instance.id, label="device_logs"
+            )
+        except HTTPStatusError as e:
+            self._report_filestore_error(token_id, e, "uploading device logs file to bucket")
+            return
+
+        if token_id:
+            tokens.update('dlu', token_id, current="Finishing",  done=2,
+                          metadata={'storedfile_id': upload_response['storedfileid']}, )
+
+        # 7. Close Upload Ticket
+        tokens.close('dlu', token_id)
 
     @with_db
     def config(self, session=None):

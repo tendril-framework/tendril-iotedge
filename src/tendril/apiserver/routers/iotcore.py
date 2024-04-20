@@ -13,6 +13,8 @@ from tendril.iotedge.profiles import device_config_unified_model
 
 from tendril.iotcore.settings import get_device_settings
 from tendril.iotcore.settings import set_device_settings
+from tendril.iotcore.logs import request_device_logs
+from tendril.iotcore.logs import available_device_logs
 
 from tendril.utils.db import get_session
 from tendril.utils import log
@@ -39,11 +41,34 @@ async def write_device_settings(id: int, settings: device_config_unified_model,
                                 user: AuthUserModel = auth_spec(scopes=['device:write']),
                                 background_tasks=BackgroundTasks):
     with get_session() as session:
+        # TODO Clean this up.
+        #  We are most probably never using these responses.
+        #  Confirm and remove.
         result = set_device_settings(id=id, settings=settings,
                                      background_tasks=background_tasks,
                                      auth_user=user, session=session)
         return get_device_settings(id=id, auth_user=user,
                                    session=session).export(expand=False)
+
+
+@device_management_router.post("/{id}/logs")
+async def request_logs_from_device(id: int,
+                       user: AuthUserModel = auth_spec(scopes=['device:write']),
+                       background_tasks=BackgroundTasks):
+    with get_session() as session:
+        return request_device_logs(id=id, background_tasks=background_tasks,
+                                   auth_user=user, session=session)
+
+
+@device_management_router.get("/{id}/logs")
+async def get_available_logs(id: int,
+                             user: AuthUserModel = auth_spec(scopes=['device:write']),
+                             background_tasks=BackgroundTasks):
+    with get_session() as session:
+        return available_device_logs(id=id, background_tasks=background_tasks,
+                                     auth_user=user, session=session)
+
+
 
 if INTERESTS_API_ENABLED:
     routers = [
