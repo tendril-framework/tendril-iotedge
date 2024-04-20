@@ -3,6 +3,7 @@
 import os
 import arrow
 from httpx import HTTPStatusError
+from asgiref.sync import async_to_sync
 from tendril.filestore import buckets
 from tendril.config import IOTEDGE_DEVICE_LOGS_UPLOAD_FILESTORE_BUCKET
 
@@ -64,7 +65,7 @@ class DeviceProfile(object):
             )
 
     @with_db
-    async def receive_logs(self, file, rename_to=None, token_id=None, session=None):
+    def receive_logs(self, file, rename_to=None, token_id=None, session=None):
         # TODO Consider integrating this into a standardized upload handler
         #  in the interest itself
         storage_folder = f'{self.model_instance.id}'
@@ -77,7 +78,7 @@ class DeviceProfile(object):
 
         # 2. Upload File to Bucket
         try:
-            upload_response = await self.upload_bucket.upload(
+            upload_response =  async_to_sync(self.upload_bucket.upload)(
                 file=(os.path.join(storage_folder, filename), file.file),
                 interest=self.model_instance.id, label="device_logs"
             )
