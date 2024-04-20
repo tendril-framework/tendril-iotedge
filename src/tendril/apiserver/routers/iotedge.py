@@ -76,13 +76,15 @@ async def iot_device_settings(req: IoTDeviceSettingRequestTModel):
     result = get_config(device_id=req.id, appname=req.appname)
     return result
 
+
 @iotedge_router.post("/logs")
 async def iot_device_publish_logs(background_tasks: BackgroundTasks,
                                   file: UploadFile = File(...),
                                   user: AuthUserModel = auth_spec()):
     device_id = user.email.split('@')[0]
-    response = await publish_logs(device_id=device_id, logs_archive=file)
-    return "TODO"
+    response = await publish_logs(device_id=device_id, logs_archive=file,
+                                  background_tasks=background_tasks)
+    return response
 
 
 routers = []
