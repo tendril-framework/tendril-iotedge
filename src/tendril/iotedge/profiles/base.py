@@ -26,7 +26,7 @@ class DeviceProfile(object):
 
     @property
     def upload_bucket(self):
-        if not hasattr(self, '_upload_bucket'):
+        if not hasattr(self, '_logs_upload_bucket'):
             self._logs_upload_bucket = None
         if not self._logs_upload_bucket:
             self._logs_upload_bucket = buckets.get_bucket(self.logs_upload_bucket_name)
