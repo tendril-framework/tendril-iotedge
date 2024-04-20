@@ -32,6 +32,7 @@ core_dependencies = [
     'tendril-caching>=0.2.2',
     'tendril-auth>=0.3.3',
     'tendril-interests>=0.2.3',
+    'tendril-filestore',
 ]
 
 install_requires = core_dependencies + ['wheel']
