@@ -32,4 +32,4 @@ def available_device_logs(id: int, background_tasks=None, auth_user=None, sessio
                                        label="device_logs",
                                        session=session)
 
-    return [{'uri': x.expose_uri, 'created': x.created_atFi} for x in log_files]
+    return [{'uri': x.expose_uri, 'created': x.created_at} for x in log_files]
