@@ -16,6 +16,7 @@ def request_device_logs(id: int, background_tasks=None, auth_user=None, session=
     interest = library.item(id=id, session=session)
     if not hasattr(interest, 'appname'):
         raise InterestTypeUnsupported("'appname' attribute", id=id, name=interest.name)
+    logger.info(f"Requesting logs from device {id} {interest.name}")
     interest.trigger_device_publish_logs(background_tasks=background_tasks)
     return 'OK'
 
