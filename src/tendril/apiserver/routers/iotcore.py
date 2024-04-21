@@ -35,20 +35,15 @@ async def read_device_settings(id: int,
                                    session=session).export(expand=False)
 
 
-@device_management_router.post("/{id}/settings",
-                               response_model=device_config_unified_model)
+@device_management_router.post("/{id}/settings", response_model=str)
 async def write_device_settings(id: int, settings: device_config_unified_model,
-                                user: AuthUserModel = auth_spec(scopes=['device:write']),
-                                background_tasks=BackgroundTasks):
+                                background_tasks: BackgroundTasks,
+                                user: AuthUserModel = auth_spec(scopes=['device:write'])):
     with get_session() as session:
-        # TODO Clean this up.
-        #  We are most probably never using these responses.
-        #  Confirm and remove.
         result = set_device_settings(id=id, settings=settings,
                                      background_tasks=background_tasks,
                                      auth_user=user, session=session)
-        return get_device_settings(id=id, auth_user=user,
-                                   session=session).export(expand=False)
+        return 'OK'
 
 
 @device_management_router.post("/{id}/logs")
